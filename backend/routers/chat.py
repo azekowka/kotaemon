@@ -120,7 +120,8 @@ async def get_chat_suggestions(
         
         # Combine with default samples if needed, or just use generated ones
         if not suggested_questions:
-            suggested_questions = [item[0] for item in app_instance.chat_suggestion.chat_samples]
+            chat_samples = app_instance.default_settings.get("chat_suggestion.chat_samples", [])
+            suggested_questions = [item[0] for item in chat_samples]
 
         return {"suggestions": suggested_questions}
 

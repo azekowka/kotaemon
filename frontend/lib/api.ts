@@ -60,5 +60,6 @@ export async function getFiles() {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
   const data = await response.json();
-  return data.files;
+  return data;
 }
+

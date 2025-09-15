@@ -1,38 +1,22 @@
-from typing import Generator
-
-from sqlalchemy.orm import sessionmaker
-
-from ktem.app import BaseApp
+from ktem.main import App
 from ktem.db.engine import engine
-from ktem.index import IndexManager
-from ktem.llms.manager import llms as llm_manager
-from ktem.embeddings.manager import embedding_models_manager as embedding_manager
-from ktem.rerankings.manager import reranking_models_manager as reranking_manager
+from sqlmodel import Session
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+# Create a global App instance to be shared across the application
+# This is a simplified approach. In a production environment, you might want
+# to manage the lifecycle of this instance more carefully.
+app_instance = App()
+index_manager = app_instance.index_manager
 
-class App(BaseApp):
-    def ui(self):
-        pass
+def get_application():
+    """Dependency to get the main application instance."""
+    return app_instance
 
-def get_application() -> App:
-    return App()
-
-def get_index_manager() -> IndexManager:
-    return IndexManager(get_application())
-
-def get_llm_manager():
-    return llm_manager
-
-def get_embedding_manager():
-    return embedding_manager
-
-def get_reranking_manager():
-    return reranking_manager
+def get_index_manager():
+    """Dependency to get the index manager."""
+    return index_manager
 
 def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+    """Dependency to get a database session."""
+    with Session(engine) as session:
+        yield session
